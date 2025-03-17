@@ -36,8 +36,11 @@ def extract_text_from_pdf(pdf_path):
 # Function to extract skills using fuzzy matching
 def extract_skills(text):
     found_skills = set()
+    lower_text = text.lower()  # Convert entire text to lowercase for better matching
+
     for skill in SKILL_SET:
-        match = process.extractOne(skill, text.split(), score_cutoff=80)
-        if match:
+        lower_skill = skill.lower()  # Convert skill to lowercase
+        if lower_skill in lower_text:  # Check if skill is present in the extracted text
             found_skills.add(skill)
+    
     return list(found_skills) if found_skills else ["Not Found"]
