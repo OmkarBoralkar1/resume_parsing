@@ -1,0 +1,105 @@
+/* General Page Styling */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container Styling */
+.container {
+    max-width: 800px;
+    background: white;
+    padding: 30px;
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    transition: 0.3s;
+}
+
+.container:hover {
+    box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Heading Styles */
+h1 {
+    text-align: center;
+    font-size: 28px;
+    color: #343a40;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #007BFF;
+    padding-bottom: 10px;
+}
+
+h2 {
+    background: #007BFF;
+    color: white;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 20px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+/* Highlight Styling */
+.highlight {
+    background: linear-gradient(to right, #feca57, #ff9f43);
+    padding: 8px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+/* Paragraph Styling */
+p {
+    text-align: left;
+    font-size: 16px;
+    line-height: 1.7;
+    background: #f9f9f9;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+    border-left: 5px solid #007BFF;
+}
+
+/* Subheading (for key-value pair formatting) */
+.subheading {
+    font-weight: bold;
+    color: #007BFF;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+/* Upload Another File Button */
+a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+a:hover {
+    background: #218838;
+    transform: translateY(-3px);
+    box-shadow: 0px 4px 10px rgba(40, 167, 69, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        max-width: 90%;
+        padding: 20px;
+    }
+}
