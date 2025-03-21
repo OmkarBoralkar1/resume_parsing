@@ -27,6 +27,7 @@ def extract_text_from_pdf(pdf_path):
     structured_data = {"Name": name}
     current_section = None
 
+
     for line in lines:
         if any(re.match(f"^{re.escape(header)}$", line, re.IGNORECASE) for header in section_headers):
             current_section = line
