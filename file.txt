@@ -1,0 +1,9 @@
+pip install -r requirements.txt 
+
+first run this 
+
+then  create the uploads folder
+
+then run the app.py for parsing the resume 
+
+upload the somaiya resume first then the personal one page resume

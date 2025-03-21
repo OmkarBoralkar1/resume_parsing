@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Parser</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='parsed_resume.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Parsed Resume</h1>
+        
+        <h2 class="highlight">Name</h2>
+        <p>{{ extracted_data['Name'] }}</p>
+
+        <h2>Matched Skill Set</h2>
+        <p>{{ ", ".join(extracted_data['Matched Skills']) if extracted_data['Matched Skills'] else "None found" }}</p>
+
+        {% for section, content in extracted_data.items() %}
+            {% if section not in ['Name', 'Matched Skills'] %}
+                <h2>{{ section }}</h2>
+                {% for line in content.split('\n') %}
+                    {% if line.strip() %}
+                        {% if ":" in line %}
+                            <span class="subheading">{{ line.split(":")[0] }}:</span> {{ line.split(":")[1] }}<br>
+                        {% else %}
+                            <p>{{ line }}</p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        
+        <br>
+        <a href="/">Upload Another File</a>
+    </div>
+</body>
+</html>

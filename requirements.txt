@@ -1,0 +1,7 @@
+Flask
+PyMuPDF
+fuzzywuzzy
+python-Levenshtein
+
+
+
