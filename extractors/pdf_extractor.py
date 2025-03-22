@@ -16,17 +16,24 @@ def extract_text_from_pdf(pdf_path):
     lines = [line.strip() for line in text.split("\n") if line.strip()]
     name = lines[0] if lines else "Unknown"
 
+    # Extract email and phone number
+    email = extract_email(text)
+    phone = extract_phone_number(text)
+
     # Define section headers for extraction
     section_headers = [
-    "Contact Details", "Work Experience", "Personal Information", "Education", "Technical Skills", "Skills",
-    "Additional Skills", "Certifications", "Interests", "Experience", "Achievements", "Positions of Responsibility", "Projects",
-    "CONTACT DETAILS", "WORK EXPERIENCE", "PERSONAL INFORMATION", "EDUCATION", "TECHNICAL SKILLS", "SKILLS", "PROJECTS",
-    "ADDITIONAL SKILLS", "CERTIFICATIONS", "INTERESTS", "EXPERIENCE", "ACHEIVEMENTS", "POSITIONS OF RESPONSIBILITY"
+        "Contact Details", "Work Experience", "Personal Information", "Education", "Technical Skills", "Skills",
+        "Additional Skills", "Certifications", "Interests", "Experience", "Achievements", "Positions of Responsibility", "Projects",
+        "CONTACT DETAILS", "WORK EXPERIENCE", "PERSONAL INFORMATION", "EDUCATION", "TECHNICAL SKILLS", "SKILLS", "PROJECTS",
+        "ADDITIONAL SKILLS", "CERTIFICATIONS", "INTERESTS", "EXPERIENCE", "ACHEIVEMENTS", "POSITIONS OF RESPONSIBILITY"
     ]
 
-    structured_data = {"Name": name}
+    structured_data = {
+        "Name": name,
+        "Email": email,
+        "Phone": phone
+    }
     current_section = None
-
 
     for line in lines:
         if any(re.match(f"^{re.escape(header)}$", line, re.IGNORECASE) for header in section_headers):
@@ -41,6 +48,20 @@ def extract_text_from_pdf(pdf_path):
     return structured_data
 
 
+# Function to extract email
+def extract_email(text):
+    email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+    matches = re.findall(email_pattern, text)
+    return matches[0] if matches else "Not Found"
+
+
+# Function to extract phone number
+def extract_phone_number(text):
+    phone_pattern = r"\+?\d{1,3}[-.\s]?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}"
+    matches = re.findall(phone_pattern, text)
+    return matches[0] if matches else "Not Found"
+
+
 # Function to extract skills using fuzzy matching
 def extract_skills(text):
     found_skills = set()
@@ -50,5 +71,5 @@ def extract_skills(text):
         lower_skill = skill.lower()  # Convert skill to lowercase
         if lower_skill in lower_text:  # Check if skill is present in the extracted text
             found_skills.add(skill)
-    
+
     return list(found_skills) if found_skills else ["Not Found"]

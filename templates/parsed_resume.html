@@ -19,7 +19,8 @@
         {% for section, content in extracted_data.items() %}
             {% if section not in ['Name', 'Matched Skills'] %}
                 <h2>{{ section }}</h2>
-                {% for line in content.split('\n') %}
+                {% for line in content.split('\n') if content %}
+
                     {% if line.strip() %}
                         {% if ":" in line %}
                             <span class="subheading">{{ line.split(":")[0] }}:</span> {{ line.split(":")[1] }}<br>
