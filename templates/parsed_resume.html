@@ -1,39 +1,54 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta tags for character encoding and responsive design -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page Title -->
     <title>Resume Parser</title>
+
+    <!-- Linking the CSS file for styling -->
     <link rel="stylesheet" href="{{ url_for('static', filename='parsed_resume.css') }}">
 </head>
 <body>
     <div class="container">
+        <!-- Main heading of the page -->
         <h1>Parsed Resume</h1>
-        
-        <h2 class="highlight">Name</h2>
+
+        <!-- Display the extracted name -->
+        <h2>Name</h2>
         <p>{{ extracted_data['Name'] }}</p>
 
-        <h2>Matched Skill Set</h2>
-        <p>{{ ", ".join(extracted_data['Matched Skills']) if extracted_data['Matched Skills'] else "None found" }}</p>
-
+        <!-- Loop through extracted resume sections dynamically -->
         {% for section, content in extracted_data.items() %}
-            {% if section not in ['Name', 'Matched Skills'] %}
-                <h2>{{ section }}</h2>
-                {% for line in content.split('\n') if content %}
-
-                    {% if line.strip() %}
-                        {% if ":" in line %}
-                            <span class="subheading">{{ line.split(":")[0] }}:</span> {{ line.split(":")[1] }}<br>
-                        {% else %}
-                            <p>{{ line }}</p>
+            {% if section not in ['Name', 'Matched Skills'] %}  <!-- Exclude Name & Matched Skills -->
+                <h2>{{ section }}</h2>  <!-- Display section heading -->
+                <div>
+                    {% for line in content.split('\n') if content %}  <!-- Split content into lines -->
+                        {% if line.strip() %}  <!-- Ignore empty lines -->
+                            {% if ":" in line %}  <!-- If the line contains a colon, assume it's a key-value pair -->
+                                <span class="subheading">{{ line.split(":")[0] }}:</span> 
+                                {{ line.split(":")[1] }}<br>  <!-- Extract key-value and format -->
+                            {% else %}
+                                <p>{{ line }}</p>  <!-- Display the line normally -->
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                {% endfor %}
+                    {% endfor %}
+                </div>
             {% endif %}
         {% endfor %}
+
+        <!-- Display the matched skills from the extracted data -->
+        <h2>Matched Skill Set</h2>
+        <div class="skill-set">
+            <p>
+                {{ ", ".join(extracted_data['Matched Skills']) if extracted_data['Matched Skills'] else "None found" }}
+            </p>  <!-- Join skills with commas or display 'None found' if empty -->
+        </div>
         
-        <br>
-        <a href="/">Upload Another File</a>
+        <!-- Link to upload another resume -->
+        <a href="/" class="upload-link">Upload Another File</a>
     </div>
 </body>
 </html>

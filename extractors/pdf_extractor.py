@@ -1,8 +1,11 @@
+import spacy
 import PyPDF2
 import re
 from fuzzywuzzy import process
 from config import SKILL_SET
 
+# Load pre-trained NLP model (spaCy's large model for better accuracy)
+nlp = spacy.load("en_core_web_sm")
 
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_path):
@@ -11,49 +14,44 @@ def extract_text_from_pdf(pdf_path):
         pdf_reader = PyPDF2.PdfReader(file)
         for page in pdf_reader.pages:
             text += page.extract_text() + "\n"
-
-    # Extract name (first meaningful non-empty line)
-    lines = [line.strip() for line in text.split("\n") if line.strip()]
-    name = lines[0] if lines else "Unknown"
-
-    # Extract email and phone number
+    
+    # Process text using NLP
+    doc = nlp(text)
+    
+    # Extract name, email, phone number
+    name = extract_name(doc)
     email = extract_email(text)
     phone = extract_phone_number(text)
-
-    # Define section headers for extraction
-    section_headers = [
-        "Contact Details", "Work Experience", "Personal Information", "Education", "Technical Skills", "Skills",
-        "Additional Skills", "Certifications", "Interests", "Experience", "Achievements", "Positions of Responsibility", "Projects",
-        "CONTACT DETAILS", "WORK EXPERIENCE", "PERSONAL INFORMATION", "EDUCATION", "TECHNICAL SKILLS", "SKILLS", "PROJECTS",
-        "ADDITIONAL SKILLS", "CERTIFICATIONS", "INTERESTS", "EXPERIENCE", "ACHEIVEMENTS", "POSITIONS OF RESPONSIBILITY"
-    ]
-
-    structured_data = {
+    
+    # Extract structured information
+    structured_data = extract_sections(text)
+    structured_data.update({
         "Name": name,
         "Email": email,
-        "Phone": phone
-    }
-    current_section = None
-
-    for line in lines:
-        if any(re.match(f"^{re.escape(header)}$", line, re.IGNORECASE) for header in section_headers):
-            current_section = line
-            structured_data[current_section] = ""
-        elif current_section:
-            structured_data[current_section] += line + "\n"
-
-    # Extract and match skills
-    structured_data["Matched Skills"] = extract_skills(text)
-
+        "Phone": phone,
+        "Matched Skills": extract_skills(text)
+    })
+    
     return structured_data
 
-
+# Function to extract name using NER
+def extract_name(doc):
+    name_parts = []
+    for token in doc:
+        if token.pos_ == "PROPN":  # Proper noun (Singular or Plural)
+            name_parts.append(token.text)
+        if len(name_parts) == 4:  # Limit to a maximum of 4 words
+            break
+    
+    # If name parts are found, join them to form the full name
+    if name_parts:
+        return " ".join(name_parts)
+    return "Unknown"
 # Function to extract email
 def extract_email(text):
     email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
     matches = re.findall(email_pattern, text)
     return matches[0] if matches else "Not Found"
-
 
 # Function to extract phone number
 def extract_phone_number(text):
@@ -61,15 +59,34 @@ def extract_phone_number(text):
     matches = re.findall(phone_pattern, text)
     return matches[0] if matches else "Not Found"
 
-
+# Function to extract sections using NLP
+def extract_sections(text):
+    sections = {}
+    lines = text.split("\n")
+    current_section = None
+    
+    for line in lines:
+        doc = nlp(line.strip())
+        
+        # Identify section headers based on NLP features
+        if len(doc) < 5 and any(token.pos_ == "NOUN" for token in doc):
+            current_section = line.strip()
+            sections[current_section] = ""
+        elif current_section:
+            sections[current_section] += line.strip() + "\n"
+    
+    return sections
 # Function to extract skills using fuzzy matching
 def extract_skills(text):
     found_skills = set()
-    lower_text = text.lower()  # Convert entire text to lowercase for better matching
+    doc = nlp(text)  # Parse the text into a doc object
 
+    # Loop through the SKILL_SET to match the skills in the text
     for skill in SKILL_SET:
-        lower_skill = skill.lower()  # Convert skill to lowercase
-        if lower_skill in lower_text:  # Check if skill is present in the extracted text
-            found_skills.add(skill)
+        lower_skill = skill.lower()  # Convert skill to lowercase for matching
+        for token in doc:
+            # Only consider tokens with exact matches, preserving the format
+            if lower_skill == token.text.lower():
+                found_skills.add(skill)
 
     return list(found_skills) if found_skills else ["Not Found"]

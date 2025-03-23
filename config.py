@@ -5,7 +5,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 SKILL_SET = [
     # Web Development
-    "HTML", "CSS", "JavaScript", "React", "PHP", "Node.js", "Express.js", "RESTful APIs",
+    "HTML", "CSS", "JavaScript", "React", "PHP", "Node.js", "Express.js", "RESTful APIs","NLTK"
 
     # Databases
     "MySQL", "PostgreSQL", "MongoDB",
